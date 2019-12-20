@@ -140,11 +140,6 @@ static void initialize_sectors(array< array<Cell, 9>, 9>&board) {
       }
     }
   }
-
-  for (int i = 0; i < 9; i++) {
-    cout << "SECTOR " << i << endl;
-    cout << sectors[i].to_string() << endl;
-  }
 } /* initialize_sectors() */
 
 /*
@@ -182,7 +177,10 @@ int get_sector(int x, int y) {
  * Removes a value from every Cell's 'candidates' bitset in row x and column y
  */
 void remove_candidate_row_col(array< array<Cell, 9>, 9>&board, int x, int y, int candidate) {
-
+  for (int i = 0; i < 9; i++) {
+    board[x][i].candidates.set((candidate - 1), 0);
+    board[i][y].candidates.set((candidate - 1), 0);
+  }
 } /* remove_candidate_row_col() */
 
 /*
@@ -190,7 +188,7 @@ void remove_candidate_row_col(array< array<Cell, 9>, 9>&board, int x, int y, int
  * the coordinates passed in.
  */
 void remove_candidate_sector(int x, int y, int candidate) {
-
+  sectors[get_sector(x, y)].set((candidate - 1), 0);
 } /* remove_candidate_sector() */
 
 /*
@@ -202,5 +200,6 @@ void remove_candidate_sector(int x, int y, int candidate) {
 void parse_board(array< array<Cell, 9>, 9>&board, string const file_name) {
   read_board(board, file_name);
   initialize_sectors(board);
+  initialize_cell_candidates(board);
 } /* parse_board() */
 
