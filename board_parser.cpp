@@ -11,13 +11,15 @@
 using namespace std;
 
 /*
- * Sector bitset is in this form:
- * sectors:   9 8 7 6 5 4 3 2 1
+ * Bitsets are in this form:
+ * values:    9 8 7 6 5 4 3 2 1
  * bitset:    0 0 0 0 0 0 0 0 0 
  *
  * A bit in the bitset that is 1 represents that a number is
- * present in the sector.
+ * present in the row/col/sector.
  */
+array< bitset<9>, 9> rows = { 0 };
+array< bitset<9>, 9> cols = { 0 };
 array< bitset<9>, 9 > sectors = { 0 };
 
 /*
@@ -124,23 +126,50 @@ void read_board(array< array<Cell, 9>, 9>&board, string const file_name) {
  */
 
 /*
- * Initializes each sector's bitset based on the values that are initially
+ * Initializes each row/col/sector's bitset based on the values that are initially
  * present in the board.
  */
-static void initialize_sectors(array< array<Cell, 9>, 9>&board) {
+static void initialize_bitsets(array< array<Cell, 9>, 9>&board) {
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 9; j++) {
       /* 
        * If (board[i][j].val - 1) is N, this sets the Nth bit in the
-       * sector's bits to 1 for later use.
+       * row/col/sector's bits to 1 for later use.
        */
       if (board[i][j].val != -1) {
-        cout << "found a " << board[i][j].val << " in sector " << get_sector(i, j) << endl;
-        sectors[get_sector(i, j)].set(board[i][j].val - 1, 1);
+        sectors[get_sector(i, j)].set((board[i][j].val - 1), 1);
+        rows[i].set((board[i][j].val - 1), 1);
+        cols[j].set((board[i][j].val - 1), 1);
       }
     }
   }
+
+  for (int i = 0; i < 9; i++) {
+    cout << "row " << i << " bitset: " << rows[i].to_string() << endl;
+  }
+  for (int i = 0; i < 9; i++) {
+    cout << "col" << i << " bitset: " << cols[i].to_string() << endl;
+  }
 } /* initialize_sectors() */
+
+/*
+ * Initializes the 'candidates' field in each Cell based on what is present in
+ * the row/col/sector. For example:
+ * Row contains 2, 3, 4, 7, 8, 9:  1 1 1 0 0 1 1 1 0
+ * Col contains 1, 3, 6, 7, 9   :  1 0 1 1 0 0 1 0 1
+ * Sector contains 3, 4, 6, 7, 9:  1 0 1 1 0 1 1 0 0
+ *                                -------------------
+ *           'OR' INPUTS TOGETHER  0 0 0 0 1 0 0 0 0
+ *                                 9 8 7 6 5 4 3 2 1
+ * So the only candidate for this example Cell is 5.
+ */
+static void initialize_cell_candidates(array< array<Cell, 9>, 9>&board) {
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 9; j++) {
+      board[i][j].candidates = (rows[i] | cols[j] | sectors[get_sector(i, j)]).flip();
+    }
+  }
+} /* initialize_cell_candidates() */
 
 /*
  * Gets sector number based on coordinates. Sector layout is below:
@@ -199,7 +228,7 @@ void remove_candidate_sector(int x, int y, int candidate) {
 
 void parse_board(array< array<Cell, 9>, 9>&board, string const file_name) {
   read_board(board, file_name);
-  initialize_sectors(board);
+  initialize_bitsets(board);
   initialize_cell_candidates(board);
 } /* parse_board() */
 
