@@ -3,7 +3,13 @@
 #include <string>
 #include <regex>
 #include <stdlib.h>
+#include <array>
+#include <bitset>
+
+#include "board_parser.h"
+
 using namespace std;
+//array<bitset, 9> sectors = { 0 };
 
 /*
  * Nicely prints the board so you can see all sectors divided up.
@@ -18,11 +24,11 @@ void print_board(array< array<Cell, 9>, 9>&board) {
       if (j == 0 || j == 3 || j == 6) {
         cout << "|";
       }
-      if (board[i][j] == -1) {
+      if (board[i][j].val == -1) {
         cout << " . ";
       }
       else {
-        cout << board[i][j];
+        cout << board[i][j].val;
       }
     }
     cout << "|" << endl;
@@ -47,7 +53,7 @@ void print_cell_data(array< array<Cell, 9>, 9>&board) {
   }
 } /* print_cell_data() */
 
-void read_board(char (&board)[9][9], string const file_name) {
+void read_board(array< array<Cell, 9>, 9>&board, string const file_name) {
   // test if file exists
   ifstream ifile(file_name);
   if (!((bool) ifile)) {
@@ -80,7 +86,12 @@ void read_board(char (&board)[9][9], string const file_name) {
         cout << "Board must be 9x9 with blank spaces represented by a '.'" << endl;
         exit(EXIT_FAILURE);
       }
-      board[line_num][i] = line[i];
+      if (line[i] == '.') {
+        board[line_num][i] = Cell(-1);
+      }
+      else {
+        board[line_num][i] = Cell(line[i] - '0');
+      }
     }
     line_num++;
   }
@@ -94,7 +105,7 @@ void read_board(char (&board)[9][9], string const file_name) {
  * ##########################
  */
 static void initialize_sectors(array< array<Cell, 9>, 9>&board) {
-
+  //TODO: initialize_sectors
 } /* initialize_sectors() */
 
 int get_sector() {
@@ -115,6 +126,6 @@ void remove_candidate_sector(int x, int y, int candidate) {
  * ##############################
  */
 void parse_board(array< array<Cell, 9>, 9>&board, string const file_name) {
-  read_board(board);
+  read_board(board, file_name);
   initialize_sectors(board);
 } /* parse_board() */
