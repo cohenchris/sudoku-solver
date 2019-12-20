@@ -9,17 +9,23 @@
 #include "board_parser.h"
 
 using namespace std;
-//array<bitset, 9> sectors = { 0 };
+
+/*
+ * Sector bitset is in this form:
+ * sectors:   9 8 7 6 5 4 3 2 1
+ * bitset:    0 0 0 0 0 0 0 0 0 
+ *
+ * A bit in the bitset that is 1 represents that a number is
+ * present in the sector.
+ */
+array< bitset<9>, 9 > sectors = { 0 };
 
 /*
  * Nicely prints the board so you can see all sectors divided up.
  */
 void print_board(array< array<Cell, 9>, 9>&board) {
-  cout << "------------------------------" << endl;
+  cout << "-------------------------------" << endl;
   for (int i = 0; i < 9; i++) {
-    if (i == 2 || i == 5 || i == 8) {
-      cout << "------------------------------" << endl;
-    }
     for (int j = 0; j < 9; j++) {
       if (j == 0 || j == 3 || j == 6) {
         cout << "|";
@@ -28,10 +34,14 @@ void print_board(array< array<Cell, 9>, 9>&board) {
         cout << " . ";
       }
       else {
-        cout << board[i][j].val;
+        cout << " " << board[i][j].val << " ";
       }
+
     }
     cout << "|" << endl;
+    if (i == 2 || i == 5 || i == 8) {
+      cout << "-------------------------------" << endl;
+    }
   }
 } /* print_board() */
 
@@ -53,6 +63,9 @@ void print_cell_data(array< array<Cell, 9>, 9>&board) {
   }
 } /* print_cell_data() */
 
+/*
+ *
+ */
 void read_board(array< array<Cell, 9>, 9>&board, string const file_name) {
   // test if file exists
   ifstream ifile(file_name);
@@ -104,18 +117,79 @@ void read_board(array< array<Cell, 9>, 9>&board, string const file_name) {
  * #    SECTOR FUNCTIONS    #
  * ##########################
  */
+
+/*
+ *
+ */
 static void initialize_sectors(array< array<Cell, 9>, 9>&board) {
-  //TODO: initialize_sectors
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 9; j++) {
+      /* 
+       * Where (board[i][j].val - 1) is N, this sets the Nth bit in the
+       * sector's bits to 1 for later use.
+       */
+      if (board[i][j].val != -1) {
+        cout << "found a " << board[i][j].val << " in sector " << get_sector(i, j) << endl;
+        sectors[get_sector(i, j)].set(board[i][j].val - 1, 1);
+      }
+    }
+  }
+
+  for (int i = 0; i < 9; i++) {
+    cout << "SECTOR " << i << endl;
+    cout << sectors[i].to_string() << endl;
+  }
 } /* initialize_sectors() */
 
-int get_sector() {
-
+/*
+ *
+ */
+int get_sector(int x, int y) {
+  if (x >= 0 && x <= 2) {
+    if (y >= 0 && y <= 2) {
+      return 0;
+    }
+    else if (y >= 3 && y <= 5) {
+      return 1;
+    }
+    else if (y >= 6 && y <= 8) {
+      return 2;
+    }
+  }
+  else if (x >= 3 && x <= 5) {
+    if (y >= 0 && y <= 2) {
+      return 3;
+    }
+    else if (y >= 3 && y <= 5) {
+      return 4;
+    }
+    else if (y >= 6 && y <= 8) {
+      return 5;
+    }
+  }
+  else if (x >= 6 && x <= 8) {
+    if (y >= 0 && y <= 2) {
+      return 6;
+    }
+    else if (y >= 3 && y <= 5) {
+      return 7;
+    }
+    else if (y >= 6 && y <= 8) {
+      return 8;
+    }
+  }
 } /* get_sector() */
 
+/*
+ *
+ */
 void remove_candidate_row_col(array< array<Cell, 9>, 9>&board, int x, int y, int candidate) {
 
 } /* remove_candidate_row_col() */
 
+/*
+ *
+ */
 void remove_candidate_sector(int x, int y, int candidate) {
 
 } /* remove_candidate_sector() */
