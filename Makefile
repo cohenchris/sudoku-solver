@@ -1,2 +1,2 @@
-sudoku: sudoku_solver.cpp
-	g++ -std=c++11 -o sudoku_solver sudoku_solver.cpp
+sudoku: board_parser.cpp Cell.cpp main.cpp
+	g++ -std=c++17 -o sudoku_solver board_parser.cpp Cell.cpp main.cpp
