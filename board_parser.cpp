@@ -64,7 +64,9 @@ void print_cell_data(array< array<Cell, 9>, 9>&board) {
 } /* print_cell_data() */
 
 /*
- *
+ * Reads in the file that is passed in from main(), and stores the board into a
+ * 2D array of Cells to be used later. A value of '-1' in a Cell represents an
+ * empty cell, and any other positive value 1-9 represents a present value.
  */
 void read_board(array< array<Cell, 9>, 9>&board, string const file_name) {
   // test if file exists
@@ -81,14 +83,16 @@ void read_board(array< array<Cell, 9>, 9>&board, string const file_name) {
   int line_num = 0;
   string sudoku_char = "";
 
+  /* 
+   * Loops through each line, parsing every character, until the end of the
+   * file is reached. If, at any point, the program detects invalid input or
+   * formatting, it will terminate.
+   */
+
   while ((!board_file.eof()) && (line_num < 9)) {
     getline(board_file, line, '\n');
 
-    if (line.size() > 9) {
-      cout << "Board must be 9x9 with blank spaces represented by a '.'" << endl;
-      exit(EXIT_FAILURE);
-    }
-    if (line_num > 9) {
+    if (line.size() > 9 || line_num > 9) {
       cout << "Board must be 9x9 with blank spaces represented by a '.'" << endl;
       exit(EXIT_FAILURE);
     }
@@ -103,6 +107,7 @@ void read_board(array< array<Cell, 9>, 9>&board, string const file_name) {
         board[line_num][i] = Cell(-1);
       }
       else {
+        // subtracting '0' translates the ascii value of the read in number into the real value
         board[line_num][i] = Cell(line[i] - '0');
       }
     }
@@ -119,13 +124,14 @@ void read_board(array< array<Cell, 9>, 9>&board, string const file_name) {
  */
 
 /*
- *
+ * Initializes each sector's bitset based on the values that are initially
+ * present in the board.
  */
 static void initialize_sectors(array< array<Cell, 9>, 9>&board) {
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 9; j++) {
       /* 
-       * Where (board[i][j].val - 1) is N, this sets the Nth bit in the
+       * If (board[i][j].val - 1) is N, this sets the Nth bit in the
        * sector's bits to 1 for later use.
        */
       if (board[i][j].val != -1) {
@@ -142,53 +148,46 @@ static void initialize_sectors(array< array<Cell, 9>, 9>&board) {
 } /* initialize_sectors() */
 
 /*
+ * Gets sector number based on coordinates. Sector layout is below:
  *
+ * -------------
+ * | 0 | 1 | 2 |
+ * -------------
+ * | 3 | 4 | 5 |
+ * -------------
+ * | 6 | 7 | 8 |
+ * -------------
+ *
+ *  Each sector is 3x3, where coordinate (0, 0) is in the top left
  */
 int get_sector(int x, int y) {
   if (x >= 0 && x <= 2) {
-    if (y >= 0 && y <= 2) {
-      return 0;
-    }
-    else if (y >= 3 && y <= 5) {
-      return 1;
-    }
-    else if (y >= 6 && y <= 8) {
-      return 2;
-    }
+    if (y >= 0 && y <= 2)       { return 0; }
+    else if (y >= 3 && y <= 5)  { return 1; }
+    else if (y >= 6 && y <= 8)  { return 2; }
   }
   else if (x >= 3 && x <= 5) {
-    if (y >= 0 && y <= 2) {
-      return 3;
-    }
-    else if (y >= 3 && y <= 5) {
-      return 4;
-    }
-    else if (y >= 6 && y <= 8) {
-      return 5;
-    }
+    if (y >= 0 && y <= 2)       { return 3; }
+    else if (y >= 3 && y <= 5)  { return 4; }
+    else if (y >= 6 && y <= 8)  { return 5; }
   }
   else if (x >= 6 && x <= 8) {
-    if (y >= 0 && y <= 2) {
-      return 6;
-    }
-    else if (y >= 3 && y <= 5) {
-      return 7;
-    }
-    else if (y >= 6 && y <= 8) {
-      return 8;
-    }
+    if (y >= 0 && y <= 2)       { return 6; }
+    else if (y >= 3 && y <= 5)  { return 7; }
+    else if (y >= 6 && y <= 8)  { return 8; }
   }
 } /* get_sector() */
 
 /*
- *
+ * Removes a value from every Cell's 'candidates' bitset in row x and column y
  */
 void remove_candidate_row_col(array< array<Cell, 9>, 9>&board, int x, int y, int candidate) {
 
 } /* remove_candidate_row_col() */
 
 /*
- *
+ * Removes a value from a sector's bitset, where the sector is determined by
+ * the coordinates passed in.
  */
 void remove_candidate_sector(int x, int y, int candidate) {
 
@@ -199,7 +198,9 @@ void remove_candidate_sector(int x, int y, int candidate) {
  * #    MAIN WRAPPER FUNCTION   #
  * ##############################
  */
+
 void parse_board(array< array<Cell, 9>, 9>&board, string const file_name) {
   read_board(board, file_name);
   initialize_sectors(board);
 } /* parse_board() */
+
