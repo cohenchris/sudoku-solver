@@ -23,7 +23,7 @@ int main(int argc, char ** argv) {
   //cout << "    SOLVED BOARD     " << endl;
   print_board(game_board);
 
-  //print_cell_data(game_board);
+  print_cell_data(game_board);
 
   exit(EXIT_SUCCESS);
 } /* main() */
