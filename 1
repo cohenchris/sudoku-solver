@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <bitset>
 #include <array>
@@ -43,9 +42,8 @@ int get_sector(int x, int y) {
  */
 void remove_candidate_row_col(array< array<Cell, 9>, 9>&board, int x, int y, int candidate) {
   for (int i = 0; i < 9; i++) {
-    cout << "removed " << candidate << " from " << x << ", " << i << endl;
+    cout << "removed " << candidate << " from " << x << ", " << y << endl;
     board[x][i].candidates.set((candidate - 1), 0);
-    cout << "removed " << candidate << " from " << i << ", " << y << endl;
     board[i][y].candidates.set((candidate - 1), 0);
   }
 } /* remove_candidate_row_col() */
@@ -55,7 +53,6 @@ void remove_candidate_row_col(array< array<Cell, 9>, 9>&board, int x, int y, int
  * the coordinates passed in.
  */
 void remove_candidate_sector(int x, int y, int candidate) {
-  cout << "removed " << candidate << " from sector " << get_sector(x, y) << endl;
   sectors[get_sector(x, y)].set((candidate - 1), 0);
 } /* remove_candidate_sector() */
 

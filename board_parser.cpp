@@ -45,14 +45,16 @@ void print_board(array< array<Cell, 9>, 9>&board) {
 void print_cell_data(array< array<Cell, 9>, 9>&board) {
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 9; j++) {
-      cout << "-------------" << endl;
-      cout << i << ", " << j << endl;
-      cout << "value:" << endl;
-      cout << "   " << board[i][j].val << endl;
-      cout << "candidates:" << endl;
-      cout << "   123456789" << endl;
-      cout << "   " << board[i][j].candidates.to_string() << endl;
-      cout << "-------------" << endl << endl;
+      if (board[i][j].candidates.count() != 0) {
+        cout << "-------------" << endl;
+        cout << i << ", " << j << endl;
+        cout << "value:" << endl;
+        cout << "   " << board[i][j].val << endl;
+        cout << "candidates:" << endl;
+        cout << "   123456789" << endl;
+        cout << "   " << board[i][j].candidates.to_string() << endl;
+        cout << "-------------" << endl << endl;
+      }
     }
   }
 } /* print_cell_data() */
@@ -158,7 +160,9 @@ static void initialize_bitsets(array< array<Cell, 9>, 9>&board) {
 static void initialize_cell_candidates(array< array<Cell, 9>, 9>&board) {
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 9; j++) {
-      board[i][j].candidates = (rows[i] | cols[j] | sectors[get_sector(i, j)]).flip();
+      if (board[i][j].val == -1) {
+        board[i][j].candidates = (rows[i] | cols[j] | sectors[get_sector(i, j)]).flip();
+      }
     }
   }
 } /* initialize_cell_candidates() */
