@@ -14,9 +14,8 @@ int main(int argc, char ** argv) {
   switch(argc) {
     case 2:
       parse_board(game_board, argv[1]);
-      //print_cell_data(game_board);
+      cout << "         ORIGINAL BOARD    " << endl;
       print_board(game_board);
-      //print_cell_data(game_board);
       run_solving_algorithms(game_board);
       break;
     default:
@@ -25,7 +24,7 @@ int main(int argc, char ** argv) {
               "represented by a '.'" << endl;
       exit(EXIT_FAILURE);
   }
-  //cout << "    SOLVED BOARD     " << endl;
+  cout << "          SOLVED BOARD     " << endl;
   print_board(game_board);
 
   //print_cell_data(game_board);

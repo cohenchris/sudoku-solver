@@ -137,13 +137,6 @@ static void initialize_bitsets(array< array<Cell, 9>, 9>&board) {
       }
     }
   }
-
-  for (int i = 0; i < 9; i++) {
-    cout << "row " << i << " bitset: " << rows[i].to_string() << endl;
-  }
-  for (int i = 0; i < 9; i++) {
-    cout << "col" << i << " bitset: " << cols[i].to_string() << endl;
-  }
 } /* initialize_sectors() */
 
 /*
