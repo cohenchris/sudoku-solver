@@ -28,15 +28,98 @@ bool single_candidate(array< array<Cell, 9>, 9>&board, int x, int y) {
   return false;
 } /* single_candidate() */
 
+/*  #############################
+ *  #   UNIQUE VALUE CHECKERS   #
+ *  #############################
+ */
+
+/*
+ * These functions check the Cell's row/col/sector to find out if the Cell
+ * has a candidate that is unique to its row/col/sector. For example:
+ * Cell candidates  1, 3, 7, 8, 9   :  1 1 1 0 0 0 1 0 1
+ * Cell2 candidates 2, 3, 4, 7, 8, 9:  1 1 1 0 0 1 1 1 0
+ * Cell3 candidates 6, 7, 9         :  1 0 1 1 0 0 0 0 0
+ * Cell4 candidates 2, 3, 4, 6, 7, 9:  1 0 1 1 0 1 1 1 0
+ * etc...                             -------------------
+ *          'XOR' INPUTS TOGETHER      0 0 0 0 0 0 0 0 1
+ *                                     9 8 7 6 5 4 3 2 1
+ * So the Cell has a unique candidate of 1 in its row/col/sector, therefore
+ * its value must be 1.
+ */
+
+/*
+ * Checks if cell has a unique candidate for the row that it's in. If it does,
+ * solve_cell().
+ *
+ * Returns 'true' if a cell has been changed.
+ */
 bool unique_in_row(array< array<Cell, 9>, 9>&board, int x, int y) {
+  bitset<9> unique_tester =  { 0 };
+
+  for (int i = 0; i < 9; i++) {
+    // XOR each Cell's candidates field to get unique values in its row
+    unique_tester ^= board[x][i].candidates;
+  }
+
+  if (unique_tester.count() == 1) {
+    // set Cell's candidates to new bitset if there is a unique value in its row
+    board[x][y].candidates = unique_tester;
+    solve_cell(board, x, y);
+    return true;
+  }
+
   return false;
 } /* unique_in_row() */
 
+/*
+ * Checks if cell has a unique candidate for the col that it's in. If it does,
+ * solve_cell().
+ *
+ * Returns 'true' if a cell has been changed.
+ */
 bool unique_in_col(array< array<Cell, 9>, 9>&board, int x, int y) {
+  bitset<9> unique_tester =  { 0 };
+
+  for (int i = 0; i < 9; i++) {
+    // XOR each Cell's candidates field to get unique values in its col
+    unique_tester ^= board[i][y].candidates;
+  }
+
+  if (unique_tester.count() == 1) {
+    // set Cell's candidates to new bitset if there is a unique value in its col
+    board[x][y].candidates = unique_tester;
+    solve_cell(board, x, y);
+    return true;
+  }
+
   return false;
 } /* unique_in_col() */
+/*
+ * Checks if cell has a unique candidate for the sector that it's in. If it
+ * does, solve_cell().
+ *
+ * Returns 'true' if a cell has been changed.
+ */
 
 bool unique_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
+  bitset<9> unique_tester =  { 0 };
+
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 9; j++) {
+      // XOR each Cell's candidates field to get unique values in its sector
+      if (get_sector(x, y) == get_sector(i, j)) {
+        unique_tester ^= board[i][j].candidates;
+      }
+    }
+  }
+
+  if (unique_tester.count() == 1) {
+    // set Cell's candidates to new bitset if there is a unique value in its col
+    board[x][y].candidates = unique_tester;
+    solve_cell(board, x, y);
+    return true;
+  }
+
   return false;
 } /* unique_in_sector() */
 
