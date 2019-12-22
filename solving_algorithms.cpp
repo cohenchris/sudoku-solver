@@ -13,8 +13,6 @@ using namespace std;
 bool single_candidate(array< array<Cell, 9>, 9>&board, int x, int y) {
   if ((board[x][y].candidates.count() == 0) && (board[x][y].val == -1)) {
     // No candidates and space is empty - unsolvable!
-    cout << x << ", " << y << endl;
-    cout << "candidates: " << board[x][y].candidates.to_string() << endl;
     cout << endl << "Board is unsolvable :(" << endl;
     print_board(board);
     exit(EXIT_FAILURE);
@@ -36,13 +34,17 @@ bool single_candidate(array< array<Cell, 9>, 9>&board, int x, int y) {
 /*
  * These functions check the Cell's row/col/sector to find out if the Cell
  * has a candidate that is unique to its row/col/sector. For example:
- * Cell candidates  1, 3, 7, 8, 9   :  1 1 1 0 0 0 1 0 1
  * Cell2 candidates 2, 3, 4, 7, 8, 9:  1 1 1 0 0 1 1 1 0
- * Cell3 candidates 6, 7, 9         :  1 0 1 1 0 0 0 0 0
+ * Cell3 candidates 6, 7, 9         :  1 0 1 1 0 0 0 0 0  OR
  * Cell4 candidates 2, 3, 4, 6, 7, 9:  1 0 1 1 0 1 1 1 0
  * etc...                             -------------------
- *          'XOR' INPUTS TOGETHER      0 0 0 0 0 0 0 0 1
- *                                     9 8 7 6 5 4 3 2 1
+ *                                     1 1 1 1 0 1 1 1 0  XOR
+ * Cell candidates  1, 3, 7, 8, 9   :  1 1 1 0 0 0 1 0 1
+ *                                    -------------------
+ *                                     0 0 0 1 0 1 0 1 1  AND
+ * Cell candidates  1, 3, 7, 8, 9   :  1 1 1 0 0 0 1 0 1
+ *                                    -------------------
+ *                                     0 0 0 0 0 0 0 0 1
  * So the Cell has a unique candidate of 1 in its row/col/sector, therefore
  * its value must be 1.
  */
@@ -57,9 +59,12 @@ bool unique_in_row(array< array<Cell, 9>, 9>&board, int x, int y) {
   bitset<9> unique_tester =  { 0 };
 
   for (int i = 0; i < 9; i++) {
-    // XOR each Cell's candidates field to get unique values in its row
-    unique_tester ^= board[x][i].candidates;
+    // OR each Cell's candidates field to get all present candidates in row
+    unique_tester |= board[x][i].candidates;
   }
+
+  unique_tester ^= board[x][y].candidates;
+  unique_tester &= board[x][y].candidates;
 
   if (unique_tester.count() == 1) {
     // set Cell's candidates to new bitset if there is a unique value in its row
@@ -81,9 +86,12 @@ bool unique_in_col(array< array<Cell, 9>, 9>&board, int x, int y) {
   bitset<9> unique_tester =  { 0 };
 
   for (int i = 0; i < 9; i++) {
-    // XOR each Cell's candidates field to get unique values in its col
-    unique_tester ^= board[i][y].candidates;
+    // OR each Cell's candidates field to get all present candidates in col
+    unique_tester |= board[i][y].candidates;
   }
+
+  unique_tester ^= board[x][y].candidates;
+  unique_tester &= board[x][y].candidates;
 
   if (unique_tester.count() == 1) {
     // set Cell's candidates to new bitset if there is a unique value in its col
@@ -106,12 +114,15 @@ bool unique_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
 
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 9; j++) {
-      // XOR each Cell's candidates field to get unique values in its sector
+      // OR each Cell's candidates field to get all present candidates in sector
       if (get_sector(x, y) == get_sector(i, j)) {
-        unique_tester ^= board[i][j].candidates;
+        unique_tester |= board[i][j].candidates;
       }
     }
   }
+
+  unique_tester ^= board[x][y].candidates;
+  unique_tester &= board[x][y].candidates;
 
   if (unique_tester.count() == 1) {
     // set Cell's candidates to new bitset if there is a unique value in its col
@@ -132,11 +143,12 @@ void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
     changed = false;
     for (int i = 0; i < 9; i++) {
       for (int j = 0; j < 9; j++) {
-        changed |= single_candidate(board, i, j);
-        changed |= unique_in_row(board, i, j);
-        changed |= unique_in_col(board, i, j);
-        changed |= unique_in_sector(board, i, j);
-
+        if (board[i][j].val == -1) {
+          changed |= single_candidate(board, i, j);
+          changed |= unique_in_row(board, i, j);
+          changed |= unique_in_col(board, i, j);
+          changed |= unique_in_sector(board, i, j);
+        }
       }
     }
     if (!changed) {
