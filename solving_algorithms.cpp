@@ -135,6 +135,53 @@ bool unique_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
 } /* unique_in_sector() */
 
 /*
+ * If 2 Cells in the same row/col only have 2 options (the same 2 options),
+ * AND are in the same sector, those 2 Cells are the place where those options
+ * must lie.
+ */
+bool unique_pair_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
+  array<array<int, 2>, 9> coords = get_sector_coords(get_sector(x, y) + 1);
+  int a = 0;
+  int b = 0;
+
+  for (int i = 0; i < 9; i++) {
+    a = coords[i][0];
+    b = coords[i][1];
+    if ((a != x) && (b != y)) {
+      if ((board[a][b].candidates == board[x][y].candidates) &&
+          (board[x][y].candidates.count() == 2)) {
+        //TODO: extract both candidates and put into array
+        bitset<9> temp_candidates = board[x][y].candidates;
+        int candidate[2];
+        candidate[0] = 1;
+        candidate[1] = 2;
+
+        if (a == x) {
+          // Cells are in the same row, so remove those 2 candidates from the row
+          remove_candidate_row(board, x, y, candidate[0]);
+          remove_candidate_row(board, x, y, candidate[1]);
+        }
+        else if (b == y) {
+          // Cells are in the same column, so remove those 2 candidates from the col
+          remove_candidate_row(board, x, y, candidate[0]);
+          remove_candidate_row(board, x, y, candidate[1]);
+        }
+
+        remove_candidate_sector(board, x, y, candidate[0]);
+        remove_candidate_sector(board, x, y, candidate[1]);
+
+        // adds those candidates back to the 2 Cells since we didn't solve anything
+        board[x][y].candidates = temp_candidates;
+        board[a][b].candidates = temp_candidates;
+
+        return true;
+      }
+    }
+  }
+  return false;
+} /* unique_pair_in_sector() */
+
+/*
  * Wrapper function to run all solving algorithms on the cell passed in.
  */
 void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
@@ -148,6 +195,7 @@ void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
           changed |= unique_in_row(board, i, j);
           changed |= unique_in_col(board, i, j);
           changed |= unique_in_sector(board, i, j);
+          //changed |= unique_pair_in_sector(board, i, j);
         }
       }
     }

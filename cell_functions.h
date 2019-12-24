@@ -21,8 +21,11 @@ extern array<bitset<9>, 9> cols;
 extern array<bitset<9>, 9> sectors;
 
 int get_sector(int x, int y);
+array<array<int, 2>, 9> get_sector_coords(int sector);
 void solve_cell(array< array<Cell, 9>, 9>&board, int x, int y);
 void remove_candidate_row_col(array< array<Cell, 9>, 9>&board, int x, int y, int candidate);
+void remove_candidate_row(array< array<Cell, 9>, 9>&board, int x, int y, int candidate);
+void remove_candidate_col(array< array<Cell, 9>, 9>&board, int x, int y, int candidate);
 void add_value_sector(int x, int y, int value);
 void remove_candidate_sector(array< array<Cell, 9>, 9>&board, int x, int y, int candidate);
 
