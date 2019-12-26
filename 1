@@ -135,7 +135,6 @@ bool unique_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
     // set Cell's candidates to new bitset if there is a unique value in its col
     board[x][y].candidates = unique_tester;
     solve_cell(board, x, y);
-
     return true;
   }
 
@@ -148,10 +147,6 @@ bool unique_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
  * must lie.
  */
 bool unique_pair_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
-  if (board[x][y].narrowed_down) {
-    return false;
-  }
-
   array<array<int, 2>, 9> coords = get_sector_coords(get_sector(x, y));
   int a = 0;
   int b = 0;
@@ -160,6 +155,7 @@ bool unique_pair_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
     a = coords[i][0];
     b = coords[i][1];
 
+    cout << a << ", " << b << endl;
 
     if ((a != x) || (b != y)) {
       if ((board[a][b].candidates == board[x][y].candidates) &&
@@ -168,8 +164,10 @@ bool unique_pair_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
         // extract candidates from bitset
         int candidate[2] = {0, 0};
         int index = 0;
+        cout << "bit string is: " << board[a][b].candidates.to_string() << endl;
         for (int j =  8; j >= 0; j--) {
           if (board[a][b].candidates[j] == 1) {
+            cout << "set to: " << j + 1 << endl;
             candidate[index] = j + 1;
             index++;
           }
@@ -185,7 +183,6 @@ bool unique_pair_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
           remove_candidate_col(board, x, y, candidate[0]);
           remove_candidate_col(board, x, y, candidate[1]);
         }
-
         remove_candidate_sector(board, x, y, candidate[0]);
         remove_candidate_sector(board, x, y, candidate[1]);
 
@@ -206,15 +203,6 @@ bool unique_pair_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
 } /* unique_pair_in_sector() */
 
 /*
- * If there is 
- */
-bool pointing_pair(array< array<Cell, 9>, 9>&board, int x, int y) {
-  array< array<int, 2>, 9> coords = get_sector_coords(get_sector(x, y));
-
-  return false;
-} /* pointing_pair() */
-
-/*
  * Wrapper function to run all solving algorithms on the cell passed in.
  */
 void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
@@ -225,37 +213,26 @@ void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
       for (int j = 0; j < 9; j++) {
         if (board[i][j].val == -1) {
           if (single_candidate(board, i, j) == true) {
-            cout << "single candidate" << endl;
             changed |= true;
             continue;
           }
           changed |= false;
           if (unique_in_row(board, i, j)) {
-            cout << "unique row" << endl;
             changed |= true;
             continue;
           }
           changed |= false;
           if (unique_in_col(board, i, j)) {
-            cout << "unique col" << endl;
             changed |= true;
             continue;
           }
           changed |= false;
-          if (unique_in_sector(board, i, j)) { // I think this works?
-            cout << "unique_sector" << endl;
+          if (unique_in_sector(board, i, j)) {
             changed |= true;
             continue;
           }
           changed |= false;
-          if (unique_pair_in_sector(board, i, j)) { // I think this works?
-            cout << "unique pair sector" << endl;
-            changed |= true;
-            continue;
-          }
-          changed |= false;
-          if (pointing_pair(board, i, j)) {
-            cout << "pointing pair" << endl;
+          if (unique_pair_in_sector(board, i, j)) { //-> infinite loop
             changed |= true;
             continue;
           }
@@ -265,12 +242,7 @@ void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
     }
     if (!changed) {
       return;
-      for (int i = 0; i < 9; i++) {
-        for (int j = 0; j < 9; j++) {
-          cout << i << ", " << j << ":    " << board[i][j].candidates.to_string() << endl;
-        }
-      }
     }
   }
-} /* run_solving_algorithms() */
+} /* run_solving_algorithmsm() */
 

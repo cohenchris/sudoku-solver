@@ -44,41 +44,42 @@ int get_sector(int x, int y) {
  */
 array<array<int, 2>, 9> get_sector_coords(int sector) {
   switch(sector) {
-    case 1:
+    case 0:
       return {{{0, 0}, {0, 1}, {0, 2}, {1, 0}, {1, 1}, {1, 2}, {2, 0}, {2, 1}, {2, 2}}};
       break;
-    case 2:
+    case 1:
       return {{{0, 3}, {0, 4}, {0, 5}, {1, 3}, {1, 4}, {1, 5}, {2, 3}, {2, 4}, {2, 5}}};
       break;
-    case 3:
+    case 2:
       return {{{0, 6}, {0, 7}, {0, 8}, {1, 6}, {1, 7}, {1, 8}, {2, 6}, {2, 7}, {2, 8}}};
       break;
-    case 4:
+    case 3:
       return {{{3, 0}, {3, 1}, {3, 2}, {4, 0}, {4, 1}, {4, 2}, {5, 0}, {5, 1}, {5, 2}}};
       break;
-    case 5:
+    case 4:
       return {{{3, 3}, {3, 4}, {3, 5}, {4, 3}, {4, 4}, {4, 5}, {5, 3}, {5, 4}, {5, 5}}};
       break;
-    case 6:
+    case 5:
       return {{{3, 6}, {3, 7}, {3, 8}, {4, 6}, {4, 7}, {4, 8}, {5, 6}, {5, 7}, {5, 8}}};
       break;
-    case 7:
+    case 6:
       return {{{6, 0}, {6, 1}, {6, 2}, {7, 0}, {7, 1}, {7, 2}, {8, 0}, {8, 1}, {8, 2}}};
       break;
-    case 8:
+    case 7:
       return {{{6, 3}, {6, 4}, {6, 5}, {7, 3}, {7, 4}, {7, 5}, {8, 3}, {8, 4}, {8, 5}}};
       break;
-    case 9:
+    case 8:
       return {{{6, 6}, {6, 7}, {6, 8}, {7, 6}, {7, 7}, {7, 8}, {8, 6}, {8, 7}, {8, 8}}};
       break;
     default:
-      cout << "Error! Sector coordinates must be between 1-9, inclusive." << endl;
+      cout << "Error! Sector coordinates must be between 0-8, inclusive." << endl;
       exit(EXIT_FAILURE);
   }
 } /* get_sector_coords() */
 
 /*
- * Removes a value from every Cell's 'candidates' bitset in row x and column y
+ * Removes a value from every Cell's 'candidates' bitset in row x and column y.
+ * No error checking - DANGEROUS!
  */
 void remove_candidate_row_col(array< array<Cell, 9>, 9>&board, int x, int y, int candidate) {
   for (int i = 0; i < 9; i++) {
@@ -92,7 +93,9 @@ void remove_candidate_row_col(array< array<Cell, 9>, 9>&board, int x, int y, int
  */
 void remove_candidate_row(array< array<Cell, 9>, 9> &board, int x, int y, int candidate) {
   for (int i = 0; i < 9; i++) {
-    board[x][i].candidates.set((candidate - 1), 0);
+    //if (i != y) {
+      board[x][i].candidates.set((candidate - 1), 0);
+    //}
   }
 } /* remove_candidate_row() */
 
@@ -101,7 +104,9 @@ void remove_candidate_row(array< array<Cell, 9>, 9> &board, int x, int y, int ca
  */
 void remove_candidate_col(array< array<Cell, 9>, 9> &board, int x, int y, int candidate) {
   for (int i = 0; i < 9; i++) {
+    //if (i != x) {
     board[i][y].candidates.set((candidate - 1), 0);
+    //}
   }
 } /* remove_candidate_col() */
 
@@ -111,22 +116,22 @@ void remove_candidate_col(array< array<Cell, 9>, 9> &board, int x, int y, int ca
  */
 void add_value_sector(int x, int y, int value) {
   sectors[get_sector(x, y)].set((value - 1), 1);
-} /* remove_candidate_sector() */
+} /* add_value_sector() */
 
 /*
  * Removes a value 'candidate' from every cell in a sector, where the sector
  * is determined by the coordinates passed in.
  */
 void remove_candidate_sector(array< array<Cell, 9>, 9>&board, int x, int y, int candidate) {
-  //TODO: probably a more efficient way to do this
-  //TODO: what if a value is accidentally removed when we don't want it to be removed?
-  //      no error checking for if val is equal to x, y
+  array<array<int, 2>, 9> coords = get_sector_coords(get_sector(x, y));
+  int a = 0;
+  int b = 0;
   for (int i = 0; i < 9; i++) {
-    for (int j = 0; j < 9; j++) {
-      if (get_sector(x, y) == get_sector(i, j)) {
-        board[i][j].candidates.set((candidate - 1), 0);
-      }
-    }
+    a = coords[i][0];
+    b = coords[i][1];
+    //if ((a != x) && (b != y)) {
+    board[a][b].candidates.set((candidate - 1), 0);
+    //}
   }
 } /* remove_candidate_sector() */
 /*
@@ -143,7 +148,7 @@ void solve_cell(array< array<Cell, 9>, 9>&board, int x, int y) {
   board[x][y].candidates.reset();
 
   remove_candidate_row_col(board, x, y, board[x][y].val);
-  add_value_sector(x, y, board[x][y].val);
   remove_candidate_sector(board, x, y, board[x][y].val);
+  add_value_sector(x, y, board[x][y].val);
 } /* solve_cell() */
 
