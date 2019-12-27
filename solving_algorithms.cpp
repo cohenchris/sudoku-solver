@@ -206,7 +206,18 @@ bool unique_pair_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
 } /* unique_pair_in_sector() */
 
 /*
- * If there is 
+ * pt1: if there is a pair of Cells in a sector that are in the same
+ *      row/column, and there is a value that is unique to both of
+ *      those Cells in the sector, that value can be removed from the
+ *      corresponding row/column (bitwise AND the two Cells and check
+ *      the rest of the sector for existence. if there are unique values,
+ *      remove them from the corresponding row/col)
+ *
+ * pt2: if there is a pair of Cells in a sector that are in the same
+ *      row/column, and there is a value in both of those columns that are
+ *      unique to that row/column, that value can be removed from the
+ *      corresponding row/column (bitwise AND the two cells and check
+ *      for existence in the corresponding row/col)
  */
 bool pointing_pair(array< array<Cell, 9>, 9>&board, int x, int y) {
   array< array<int, 2>, 9> coords = get_sector_coords(get_sector(x, y));
