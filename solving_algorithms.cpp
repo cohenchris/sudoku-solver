@@ -221,7 +221,13 @@ bool unique_pair_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
  */
 bool pointing_pair(array< array<Cell, 9>, 9>&board, int x, int y) {
   array< array<int, 2>, 9> coords = get_sector_coords(get_sector(x, y));
+  int a = 0;
+  int b = 0;
 
+  for (int i = 0; i < 9; i++) {
+    a = coords[i][0];
+    b = coords[i][1];
+  }
   return false;
 } /* pointing_pair() */
 
