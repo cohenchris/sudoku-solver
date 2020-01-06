@@ -206,20 +206,25 @@ bool unique_pair_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
 } /* unique_pair_in_sector() */
 
 /*
- * pt1: if there is a pair of Cells in a sector that are in the same
- *      row/column, and there is a value that is unique to both of
+ * pt1: if there is a pair/triplet of Cells in a sector that are in the same
+ *      row/column, and there is a value that is unique to all of
  *      those Cells in the sector, that value can be removed from the
- *      corresponding row/column (bitwise AND the two Cells and check
+ *      corresponding row/column (bitwise AND the Cells and check
  *      the rest of the sector for existence. if there are unique values,
  *      remove them from the corresponding row/col)
- *
- * pt2: if there is a pair of Cells in a sector that are in the same
- *      row/column, and there is a value in both of those columns that are
+ * ------------------------------------------------------------------------
+ * pt2: if there is a pair/triplet of Cells in a sector that are in the same
+ *      row/column, and there is a value in all of those Cells that is
  *      unique to that row/column, that value can be removed from the
- *      corresponding row/column (bitwise AND the two cells and check
+ *      corresponding sector (bitwise AND the cells and check
  *      for existence in the corresponding row/col)
  */
-bool pointing_pair(array< array<Cell, 9>, 9>&board, int x, int y) {
+bool common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
+  // TODO:
+  // pt2 will be in the middle of pt1. check for uniqueness in that row/col for
+  // the pair/triple. if it is unique, remove that unique value from the sector
+
+  // pt1
   array< array<int, 2>, 9> coords = get_sector_coords(get_sector(x, y));
   int a = 0;
   int b = 0;
@@ -228,8 +233,15 @@ bool pointing_pair(array< array<Cell, 9>, 9>&board, int x, int y) {
     a = coords[i][0];
     b = coords[i][1];
   }
+
+  //TODO: enumerate through all possible pairs
+  //TODO: enumerate through all possible triples
+
+  //TODO: bitwise operations and determine uniquness of values in sector.
+  //      if unique, remove_row or remove_col where needed
+
   return false;
-} /* pointing_pair() */
+} /* common_val_in_sector() */
 
 /*
  * Wrapper function to run all solving algorithms on the cell passed in.
@@ -265,14 +277,15 @@ void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
             continue;
           }
           changed |= false;
+          //TODO: expand to unique pair in sector/row/col
           if (unique_pair_in_sector(board, i, j)) { // I think this works?
             cout << "unique pair sector" << endl;
             changed |= true;
             continue;
           }
           changed |= false;
-          if (pointing_pair(board, i, j)) {
-            cout << "pointing pair" << endl;
+          if (common_val_in_sector(board, i, j)) {
+            cout << "common_val_in_sector" << endl;
             changed |= true;
             continue;
           }
