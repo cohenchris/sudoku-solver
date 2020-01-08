@@ -223,9 +223,6 @@ bool unique_pair_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
  * TODO: refactor, this function has repeated code
  */
 void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
-  // TODO:
-  // pt2 will be in the middle of pt1. check for uniqueness in that row/col for
-  // the pair/triple. if it is unique, remove that unique value from the sector
 
   // pt1
   array< array<int, 2>, 9> coords = get_sector_coords(get_sector(x, y));
@@ -272,20 +269,9 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
 
     // XOR, then AND, with common values in Cells you're comparing to see if
     // there are any unique values in the Cells you're comparing
-    //cout << "other_cell_vals = " << other_cell_vals.to_string() << endl;
-    //cout << "common_cell_vals =" << common_tester_vals.to_string() << endl;
     other_cell_vals ^= common_tester_vals;
-    //cout << "other_cell_vals (XOR)= " << other_cell_vals.to_string() << endl;
     other_cell_vals &= common_tester_vals;
-    //cout << "other_cell_vals (AND)= " << other_cell_vals.to_string() << endl;
     
-    /*
-    cout << "cells = ";
-    for (int j = 0; j < combinations[i].size(); j++) {
-      cout << "(" << combinations[i][j][0] << ", " << combinations[i][j][1] << ") ";
-    }
-    cout << endl;
-    */
     //TODO: might have to be a unique bit set, but I don't think I see any problem with
     //      having multiple unique bits right now
     if (other_cell_vals.count() == 1) {
@@ -310,7 +296,16 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
 
         remove_candidate_row(board, combinations[i][0][0],
                              combinations[i][0][1], candidate);
-        //TODO: add candidates back 
+        // pt2
+        remove_candidate_sector(board, combinations[i][0][0],
+                                combinations[i][0][1], candidate);
+
+        // add candidates back 
+        for (int j = 0; j < combinations[i].size(); j++) {
+          a = combinations[i][j][0];
+          b = combinations[i][j][1];
+          board[a][b].candidates.set(candidate - 1);
+        }
       }
       if (same_col) {
         // if all tester Cells are in the same col, remove_col
@@ -323,9 +318,17 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
         }
         cout << endl;
 
-        remove_candidate_row(board, combinations[i][0][0],
+        remove_candidate_col(board, combinations[i][0][0],
                              combinations[i][0][1], candidate);
-        //TODO: add candidates back
+        // pt2
+        remove_candidate_sector(board, combinations[i][0][0],
+                                combinations[i][0][1], candidate);
+        // add candidates back
+        for (int j = 0; j < combinations[i].size(); j++) {
+          a = combinations[i][j][0];
+          b = combinations[i][j][1];
+          board[a][b].candidates.set(candidate - 1);
+        }
       }
     }
   }
@@ -339,6 +342,98 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
   other_cell_vals.reset();
   combination_finder(coords, 3, 0, combinations, combination);
 
+  // find common values between Cells that you're comparing
+  for (int i = 0; i < combinations.size(); i++) {
+    common_tester_vals.set();
+    other_cell_vals.reset();
+
+    for (int j = 0; j < combinations[i].size(); j++) {
+      a = combinations[i][j][0];
+      b = combinations[i][j][1];
+      common_tester_vals &= board[a][b].candidates;
+    }
+  //}
+
+    // find all present values in sector (not including Cells you're comparing)
+    // using bitwise OR operation
+    int valid_cell = true;
+    for (int j = 0; j < coords.size(); j++) {
+      valid_cell = true;
+      a = coords[j][0];
+      b = coords[j][1];
+      for (int k = 0; k < combinations[i].size(); k++) {
+        valid_cell &= ((combinations[i][k][0] != a) || (combinations[i][k][1] != b));
+      }
+      if (valid_cell) {
+        other_cell_vals |= board[a][b].candidates;
+      }
+    }
+
+    // XOR, then AND, with common values in Cells you're comparing to see if
+    // there are any unique values in the Cells you're comparing
+    other_cell_vals ^= common_tester_vals;
+    other_cell_vals &= common_tester_vals;
+    
+    //TODO: might have to be a unique bit set, but I don't think I see any problem with
+    //      having multiple unique bits right now
+    if (other_cell_vals.count() == 1) {
+      int candidate = log2(other_cell_vals.to_ulong()) + 1;
+      //for (int i = 0; i < combinations.size(); i++) {
+      bool same_row = true;
+      bool same_col = true;
+
+      for (int j = 0; j < combinations[i].size() - 1; j++) {
+        same_row &= combinations[i][j][0] == combinations[i][j + 1][0];
+        same_col &= combinations[i][j][1] == combinations[i][j + 1][1];
+      }
+
+      if (same_row) {
+        // if all tester Cells are in the same row, remove_row
+        cout << "common val in row --> candidate = " << candidate << endl;
+        cout << "cells = ";
+        for (int j = 0; j < combinations[i].size(); j++) {
+          cout << "(" << combinations[i][j][0] << ", " << combinations[i][j][1] << ")-[" << board[combinations[i][j][0]][combinations[i][j][1]].candidates.to_string() << "]  ";
+        }
+        cout << endl;
+
+        remove_candidate_row(board, combinations[i][0][0],
+                             combinations[i][0][1], candidate);
+        // pt2
+        remove_candidate_sector(board, combinations[i][0][0],
+                                combinations[i][0][1], candidate);
+
+        // add candidates back 
+        for (int j = 0; j < combinations[i].size(); j++) {
+          a = combinations[i][j][0];
+          b = combinations[i][j][1];
+          board[a][b].candidates.set(candidate - 1);
+        }
+      }
+      if (same_col) {
+        // if all tester Cells are in the same col, remove_col
+        remove_candidate_col(board, combinations[i][0][0],
+                             combinations[i][0][1], candidate);
+        cout << "common val in col --> candidate = " << candidate << endl;
+        cout << "cells = ";
+        for (int j = 0; j < combinations[i].size(); j++) {
+          cout << "(" << combinations[i][j][0] << ", " << combinations[i][j][1] << ") ";
+        }
+        cout << endl;
+
+        remove_candidate_col(board, combinations[i][0][0],
+                             combinations[i][0][1], candidate);
+        // pt2
+        remove_candidate_sector(board, combinations[i][0][0],
+                                combinations[i][0][1], candidate);
+        // add candidates back
+        for (int j = 0; j < combinations[i].size(); j++) {
+          a = combinations[i][j][0];
+          b = combinations[i][j][1];
+          board[a][b].candidates.set(candidate - 1);
+        }
+      }
+    }
+  }
 } /* common_val_in_sector() */
 
 /*
@@ -391,15 +486,6 @@ void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
           changed |= false;
 
           common_val_in_sector(board, i, j);
-
-          /*
-          if (common_val_in_sector(board, i, j)) {
-            cout << "common_val_in_sector" << endl;
-            changed |= true;
-            continue;
-          }
-          changed |= false;
-          */
         }
       }
     }
