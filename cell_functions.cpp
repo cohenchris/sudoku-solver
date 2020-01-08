@@ -168,6 +168,8 @@ void remove_candidate_sector(array< array<Cell, 9>, 9>&board, int x, int y, int 
 void solve_cell(array< array<Cell, 9>, 9>&board, int x, int y) {
   // extract value from bitset
   board[x][y].val = log2(board[x][y].candidates.to_ulong()) + 1;
+  cout << "Solved (" << x << ", " << y << ") with the value --" << board[x][y].val << "--" << endl;
+  cout << "-----------------------------------------------------" << endl;
   // reset bits to 0 to avoid confusion later
   board[x][y].candidates.reset();
 

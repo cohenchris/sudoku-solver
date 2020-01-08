@@ -20,6 +20,7 @@ bool single_candidate(array< array<Cell, 9>, 9>&board, int x, int y) {
   }
   else if (board[x][y].candidates.count() == 1) {
     // if only 1 bit is set, cell is solvable!
+    cout << "single candidate:" << endl;
     solve_cell(board, x, y);
     return true;
   }
@@ -72,6 +73,7 @@ bool unique_in_row(array< array<Cell, 9>, 9>&board, int x, int y) {
   if (unique_tester.count() == 1) {
     // set Cell's candidates to new bitset if there is a unique value in its row
     board[x][y].candidates = unique_tester;
+    cout << "unique in row:" << endl;
     solve_cell(board, x, y);
     return true;
   }
@@ -101,6 +103,7 @@ bool unique_in_col(array< array<Cell, 9>, 9>&board, int x, int y) {
   if (unique_tester.count() == 1) {
     // set Cell's candidates to new bitset if there is a unique value in its col
     board[x][y].candidates = unique_tester;
+    cout << "unique in col:" << endl;
     solve_cell(board, x, y);
     return true;
   }
@@ -135,6 +138,7 @@ bool unique_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
   if (unique_tester.count() == 1) {
     // set Cell's candidates to new bitset if there is a unique value in its col
     board[x][y].candidates = unique_tester;
+    cout << "unique in sector:" << endl;
     solve_cell(board, x, y);
 
     return true;
@@ -199,6 +203,11 @@ bool unique_pair_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
         board[x][y].narrowed_down = true;
         board[a][b].narrowed_down = true;
 
+        cout << "unique pair in sector:" << endl;
+        cout << "(" << a << ", " << b << ") AND (" << x << ", " << y <<
+             ")  have unique candidates " << candidate[0] << " and " <<
+             candidate[1] << endl;
+        cout << "-----------------------------------------------------" << endl;
         return true;
       }
     }
@@ -288,11 +297,7 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
       if (same_row) {
         // if all tester Cells are in the same row, remove_row
         cout << "common val in row --> candidate = " << candidate << endl;
-        cout << "cells = ";
-        for (int j = 0; j < combinations[i].size(); j++) {
-          cout << "(" << combinations[i][j][0] << ", " << combinations[i][j][1] << ")-[" << board[combinations[i][j][0]][combinations[i][j][1]].candidates.to_string() << "]  ";
-        }
-        cout << endl;
+        cout << "-----------------------------------------------------" << endl;
 
         remove_candidate_row(board, combinations[i][0][0],
                              combinations[i][0][1], candidate);
@@ -309,14 +314,8 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
       }
       if (same_col) {
         // if all tester Cells are in the same col, remove_col
-        remove_candidate_col(board, combinations[i][0][0],
-                             combinations[i][0][1], candidate);
         cout << "common val in col --> candidate = " << candidate << endl;
-        cout << "cells = ";
-        for (int j = 0; j < combinations[i].size(); j++) {
-          cout << "(" << combinations[i][j][0] << ", " << combinations[i][j][1] << ") ";
-        }
-        cout << endl;
+        cout << "-----------------------------------------------------" << endl;
 
         remove_candidate_col(board, combinations[i][0][0],
                              combinations[i][0][1], candidate);
@@ -390,11 +389,7 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
       if (same_row) {
         // if all tester Cells are in the same row, remove_row
         cout << "common val in row --> candidate = " << candidate << endl;
-        cout << "cells = ";
-        for (int j = 0; j < combinations[i].size(); j++) {
-          cout << "(" << combinations[i][j][0] << ", " << combinations[i][j][1] << ")-[" << board[combinations[i][j][0]][combinations[i][j][1]].candidates.to_string() << "]  ";
-        }
-        cout << endl;
+        cout << "-----------------------------------------------------" << endl;
 
         remove_candidate_row(board, combinations[i][0][0],
                              combinations[i][0][1], candidate);
@@ -414,11 +409,7 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
         remove_candidate_col(board, combinations[i][0][0],
                              combinations[i][0][1], candidate);
         cout << "common val in col --> candidate = " << candidate << endl;
-        cout << "cells = ";
-        for (int j = 0; j < combinations[i].size(); j++) {
-          cout << "(" << combinations[i][j][0] << ", " << combinations[i][j][1] << ") ";
-        }
-        cout << endl;
+        cout << "-----------------------------------------------------" << endl;
 
         remove_candidate_col(board, combinations[i][0][0],
                              combinations[i][0][1], candidate);
@@ -454,32 +445,32 @@ void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
           common_val_in_sector(board, i, j);
 
           if (single_candidate(board, i, j) == true) {
-            cout << "single candidate" << endl;
+            //cout << "single candidate" << endl;
             changed |= true;
             continue;
           }
           changed |= false;
           if (unique_in_row(board, i, j)) {
-            cout << "unique row" << endl;
+            //cout << "unique row" << endl;
             changed |= true;
             continue;
           }
           changed |= false;
           if (unique_in_col(board, i, j)) {
-            cout << "unique col" << endl;
+            //cout << "unique col" << endl;
             changed |= true;
             continue;
           }
           changed |= false;
           if (unique_in_sector(board, i, j)) { // I think this works?
-            cout << "unique_sector" << endl;
+            //cout << "unique_sector" << endl;
             changed |= true;
             continue;
           }
           changed |= false;
           //TODO: expand to unique pair in sector/row/col
           if (unique_pair_in_sector(board, i, j)) { // I think this works?
-            cout << "unique pair sector" << endl;
+            //cout << "unique pair sector" << endl;
             changed |= true;
             continue;
           }

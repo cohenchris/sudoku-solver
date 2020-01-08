@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <array>
 #include <bitset>
+#include <fstream>
 
 #include "board_parser.h"
 #include "solving_algorithms.h"
@@ -13,9 +14,11 @@ int main(int argc, char ** argv) {
 
   switch(argc) {
     case 2:
+      //freopen("solution.txt", "w", stdout);
       parse_board(game_board, argv[1]);
       cout << "         ORIGINAL BOARD    " << endl;
       print_board(game_board);
+      cout << "-----------------------------------------------------" << endl;
       run_solving_algorithms(game_board);
       break;
     default:

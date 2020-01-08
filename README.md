@@ -11,5 +11,4 @@
   - If the Cells are in the same row/col, both of the values in that pair can be eliminated from that row/col
 
 ### TODO
-- Logging
 - Brute Force

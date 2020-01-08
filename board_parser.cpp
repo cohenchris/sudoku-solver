@@ -53,7 +53,7 @@ void print_cell_data(array< array<Cell, 9>, 9>&board) {
         cout << "candidates:" << endl;
         cout << "   123456789" << endl;
         cout << "   " << board[i][j].candidates.to_string() << endl;
-        cout << "-------------" << endl << endl;
+        cout << "-------------" << endl;
       }
     }
   }
