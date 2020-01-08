@@ -9,3 +9,7 @@
 - UNIQUE PAIR IN SECTOR
   - If there are 2 Cells with a matching pair of possibilities, those two Cells must contain those values
   - If the Cells are in the same row/col, both of the values in that pair can be eliminated from that row/col
+
+### TODO
+- Logging
+- Brute Force

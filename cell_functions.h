@@ -2,6 +2,7 @@
 #define CELL_FUNCTIONS_H
 
 #include <array>
+#include <vector>
 
 #include "Cell.cpp"
 
@@ -26,7 +27,10 @@ void solve_cell(array< array<Cell, 9>, 9>&board, int x, int y);
 void remove_candidate_row_col(array< array<Cell, 9>, 9>&board, int x, int y, int candidate);
 void remove_candidate_row(array< array<Cell, 9>, 9>&board, int x, int y, int candidate);
 void remove_candidate_col(array< array<Cell, 9>, 9>&board, int x, int y, int candidate);
-void add_value_sector(int x, int y, int value);
 void remove_candidate_sector(array< array<Cell, 9>, 9>&board, int x, int y, int candidate);
+void add_value_sector(int x, int y, int value);
+void combination_finder(array< array<int, 2>, 9> coords, int n, int offset,
+                        vector< vector< array<int, 2> > > &combinations,
+                        vector< array<int, 2> > &combination);
 
 #endif

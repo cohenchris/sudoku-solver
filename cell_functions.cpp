@@ -78,6 +78,30 @@ array<array<int, 2>, 9> get_sector_coords(int sector) {
 } /* get_sector_coords() */
 
 /*
+ * Finds all possible combinations of groups of 'n' with the coordinates list
+ * passed in.
+ *
+ * Where 'x' is the number of combinations possible with 'n' list size and
+ * 'k' group size:
+ *
+ * x = n! / ( k! * (n - k)! )
+ */
+void combination_finder(array< array<int, 2>, 9> coords, int n, int offset,
+                        vector< vector< array<int, 2> > > &combinations,
+                        vector< array<int, 2> > &combination) {
+  if (n == 0) {
+    combinations.push_back(combination);
+    return;
+  }
+
+  for (int i = offset; i <= 9 - n; ++i) {
+    combination.push_back(coords[i]);
+    combination_finder(coords, n - 1, i + 1, combinations, combination);
+    combination.pop_back();
+  }
+} /* combination_finder() */
+  
+/*
  * Removes a value from every Cell's 'candidates' bitset in row x and column y.
  * No error checking - DANGEROUS!
  */

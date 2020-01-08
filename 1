@@ -245,9 +245,6 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
 
   // find common values between Cells that you're comparing
   for (int i = 0; i < combinations.size(); i++) {
-    common_tester_vals.set();
-    other_cell_vals.reset();
-
     for (int j = 0; j < combinations[i].size(); j++) {
       a = combinations[i][j][0];
       b = combinations[i][j][1];
@@ -259,41 +256,31 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
     // using bitwise OR operation
     int valid_cell = true;
     for (int j = 0; j < coords.size(); j++) {
-      valid_cell = true;
       a = coords[j][0];
       b = coords[j][1];
       for (int k = 0; k < combinations[i].size(); k++) {
-        valid_cell &= ((combinations[i][k][0] != a) || (combinations[i][k][1] != b));
+        valid_cell = combinations[i][k][0] != a;
+        valid_cell = combinations[i][k][1] != b;
       }
       if (valid_cell) {
+        cout << "a = " << a << ", b = " << b << endl;
         other_cell_vals |= board[a][b].candidates;
       }
     }
 
     // XOR, then AND, with common values in Cells you're comparing to see if
     // there are any unique values in the Cells you're comparing
-    //cout << "other_cell_vals = " << other_cell_vals.to_string() << endl;
-    //cout << "common_cell_vals =" << common_tester_vals.to_string() << endl;
     other_cell_vals ^= common_tester_vals;
-    //cout << "other_cell_vals (XOR)= " << other_cell_vals.to_string() << endl;
     other_cell_vals &= common_tester_vals;
-    //cout << "other_cell_vals (AND)= " << other_cell_vals.to_string() << endl;
     
-    /*
-    cout << "cells = ";
-    for (int j = 0; j < combinations[i].size(); j++) {
-      cout << "(" << combinations[i][j][0] << ", " << combinations[i][j][1] << ") ";
-    }
-    cout << endl;
-    */
+
     //TODO: might have to be a unique bit set, but I don't think I see any problem with
     //      having multiple unique bits right now
-    if (other_cell_vals.count() == 1) {
+    if (other_cell_vals.count() != 0) {
       int candidate = log2(other_cell_vals.to_ulong()) + 1;
       //for (int i = 0; i < combinations.size(); i++) {
       bool same_row = true;
       bool same_col = true;
-
       for (int j = 0; j < combinations[i].size() - 1; j++) {
         same_row &= combinations[i][j][0] == combinations[i][j + 1][0];
         same_col &= combinations[i][j][1] == combinations[i][j + 1][1];
@@ -301,32 +288,15 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
 
       if (same_row) {
         // if all tester Cells are in the same row, remove_row
-        cout << "common val in row --> candidate = " << candidate << endl;
-        cout << "cells = ";
-        for (int j = 0; j < combinations[i].size(); j++) {
-          cout << "(" << combinations[i][j][0] << ", " << combinations[i][j][1] << ")-[" << board[combinations[i][j][0]][combinations[i][j][1]].candidates.to_string() << "]  ";
-        }
-        cout << endl;
-
         remove_candidate_row(board, combinations[i][0][0],
                              combinations[i][0][1], candidate);
-        //TODO: add candidates back 
       }
       if (same_col) {
         // if all tester Cells are in the same col, remove_col
         remove_candidate_col(board, combinations[i][0][0],
                              combinations[i][0][1], candidate);
-        cout << "common val in col --> candidate = " << candidate << endl;
-        cout << "cells = ";
-        for (int j = 0; j < combinations[i].size(); j++) {
-          cout << "(" << combinations[i][j][0] << ", " << combinations[i][j][1] << ") ";
-        }
-        cout << endl;
-
-        remove_candidate_row(board, combinations[i][0][0],
-                             combinations[i][0][1], candidate);
-        //TODO: add candidates back
       }
+      //}
     }
   }
 
@@ -339,6 +309,62 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
   other_cell_vals.reset();
   combination_finder(coords, 3, 0, combinations, combination);
 
+  // find common values between Cells that you're comparing
+  for (int i = 0; i < combinations.size(); i++) {
+    for (int j = 0; j < combinations[i].size(); j++) {
+      a = combinations[i][j][0];
+      b = combinations[i][j][1];
+      common_tester_vals &= board[a][b].candidates;
+    }
+  //}
+
+    // find all present values in sector (not including Cells you're comparing)
+    // using bitwise OR operation
+    int valid_cell = true;
+    for (int j = 0; j < coords.size(); j++) {
+      a = coords[j][0];
+      b = coords[j][1];
+      for (int k = 0; k < combinations[i].size(); k++) {
+        valid_cell = combinations[i][k][0] != a;
+        valid_cell = combinations[i][k][1] != b;
+      }
+      if (valid_cell) {
+        other_cell_vals |= board[a][b].candidates;
+      }
+    }
+
+    // XOR, then AND, with common values in Cells you're comparing to see if
+    // there are any unique values in the Cells you're comparing
+    other_cell_vals ^= common_tester_vals;
+    other_cell_vals &= common_tester_vals;
+    
+
+    //TODO: might have to be a unique bit set, but I don't think I see any problem with
+    //      having multiple unique bits right now
+    if (other_cell_vals.count() != 0) {
+      int candidate = log2(other_cell_vals.to_ulong()) + 1;
+      //for (int i = 0; i < combinations.size(); i++) {
+      bool same_row = true;
+      bool same_col = true;
+      for (int j = 0; j < combinations[i].size() - 1; j++) {
+        same_row &= combinations[i][j][0] == combinations[i][j + 1][0];
+        same_col &= combinations[i][j][1] == combinations[i][j + 1][1];
+      }
+
+      if (same_row) {
+        // if all tester Cells are in the same row, remove_row
+        remove_candidate_row(board, combinations[i][0][0],
+                             combinations[i][0][1], candidate);
+      }
+      if (same_col) {
+        // if all tester Cells are in the same col, remove_col
+        remove_candidate_col(board, combinations[i][0][0],
+                             combinations[i][0][1], candidate);
+      }
+      //}
+    }
+  }
+  //return false;
 } /* common_val_in_sector() */
 
 /*
