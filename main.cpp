@@ -27,7 +27,6 @@ int main(int argc, char ** argv) {
               "represented by a '.'" << endl;
       exit(EXIT_FAILURE);
   }
-  cout << "          SOLVED BOARD     " << endl;
   print_board(game_board);
 
   //print_cell_data(game_board);

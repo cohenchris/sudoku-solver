@@ -329,28 +329,26 @@ void common_val_in_sector_helper(array< array<Cell, 9>, 9>&board,
  *
  */
 void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
-
   // pt1
   array< array<int, 2>, 9> coords = get_sector_coords(get_sector(x, y));
 
-  // ###########################################################
-  // #         find all combinations of 2 coordinates          #
-  // ###########################################################
+  // find all combinations of 2 coordinates
   vector< vector< array<int, 2> > > combinations;
   vector< array<int, 2> > combination;
   combination_finder(coords, 2, 0, combinations, combination);
 
   common_val_in_sector_helper(board, combinations, coords);
 
-
-  // ###########################################################
-  // #         find all combinations of 3 coordinates          #
-  // ###########################################################
+  // find all combinations of 3 coordinates
   combination_finder(coords, 3, 0, combinations, combination);
 
   common_val_in_sector_helper(board, combinations, coords);
 
 } /* common_val_in_sector() */
+
+bool brute_force(array< array<Cell, 9>, 9>&board, int x, int y, int candidate_guess) {
+  return false;
+} /* brute_force() */
 
 /*
  * Wrapper function to run all solving algorithms on the cell passed in.
@@ -401,12 +399,44 @@ void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
       }
     }
     if (!changed) {
+      if (!solved(board)) {
+        // #############################
+        // #     BRUTE FORCE SOLVE     #
+        // #############################
+
+        for (int i = 0; i < 9; i++) {
+          for (int j = 0; j < 9; j++) {
+            if (board[i][j].val == -1) {
+              for (int x = 0; x < 9; x++) {
+                // make copy of board
+                array< array<Cell, 9>, 9> board_copy = { 0 };
+                copy(board.begin(), board.end(), board_copy.begin());
+                
+                if (board[i][j].candidates[x] == true) {
+                  if (brute_force(board_copy, i, j, x + 1) == true) {
+                    // if brute_force returns true, board is solved
+                    board = board_copy;
+                    return;
+                  }
+                }
+              }
+              cout << endl << "Board is unsolvable :(" << endl;
+              return;
+            }
+          }
+        }
+      }
+
+      cout << "          SOLVED BOARD     " << endl;
       return;
+
+      // print candidates
       for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
           cout << i << ", " << j << ":    " << board[i][j].candidates.to_string() << endl;
         }
       }
+
     }
   }
 } /* run_solving_algorithms() */

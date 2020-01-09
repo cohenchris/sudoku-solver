@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <array>
 #include <bitset>
+#include <algorithm>
 
 #include "board_parser.h"
 
@@ -160,6 +161,17 @@ static void initialize_cell_candidates(array< array<Cell, 9>, 9>&board) {
   }
 } /* initialize_cell_candidates() */
 
+bool solved(array< array<Cell, 9>, 9>&board) {
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 9; j++) {
+      if (board[i][j].val == -1) {
+        return false;
+      }
+    }
+  }
+  return true;
+} /* solved() */
+
 /*
  * ##############################
  * #    MAIN WRAPPER FUNCTION   #
@@ -171,4 +183,3 @@ void parse_board(array< array<Cell, 9>, 9>&board, string const file_name) {
   initialize_bitsets(board);
   initialize_cell_candidates(board);
 } /* parse_board() */
-

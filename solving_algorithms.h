@@ -18,4 +18,6 @@ void common_val_in_sector_helper(array< array<Cell, 9>, 9>&board,
                                  vector< vector< array<int, 2> > > combinations,
                                  array< array< int, 2>, 9> coords);
 
+bool brute_force(array< array<Cell, 9>, 9>&board, int x, int y, int candidate_guess);
+
 #endif
