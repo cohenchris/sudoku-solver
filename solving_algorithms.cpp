@@ -12,13 +12,17 @@ using namespace std;
  * Returns 'true' if a cell has been changed
  */
 bool single_candidate(array< array<Cell, 9>, 9>&board, int x, int y) {
+  /*
   if ((board[x][y].candidates.count() == 0) && (board[x][y].val == -1)) {
     // No candidates and space is empty - unsolvable!
+    cout << "WE HAVE HOPE" << endl;
     cout << endl << "Board is unsolvable :(" << endl;
     print_board(board);
     exit(EXIT_FAILURE);
   }
-  else if (board[x][y].candidates.count() == 1) {
+  */
+  //else if (board[x][y].candidates.count() == 1) {
+  if (board[x][y].candidates.count() == 1) {
     // if only 1 bit is set, cell is solvable!
     cout << "single candidate:" << endl;
     solve_cell(board, x, y);
@@ -346,8 +350,23 @@ void common_val_in_sector(array< array<Cell, 9>, 9>&board, int x, int y) {
 
 } /* common_val_in_sector() */
 
+/*
+ * Recursive brute force method. LAST RESORT!! Essentially guesses one Cell and
+ * tries to solve the rest of the board normally. If stuck, recurses and
+ * guesses another Cell. If at any point the new board has a Cell that is
+ * unsolved and has no candidates, that brute force method failed, so break out
+ * of that branch of recursion.
+ */
 bool brute_force(array< array<Cell, 9>, 9>&board, int x, int y, int candidate_guess) {
-  return false;
+  board[x][y].candidates.reset();
+  board[x][y].candidates.set(candidate_guess - 1);
+  solve_cell(board, x, y);
+  if (run_solving_algorithms(board) == false) {
+    return false;
+  }
+  else {
+    return true;
+  }
 } /* brute_force() */
 
 /*
@@ -357,7 +376,7 @@ bool brute_force(array< array<Cell, 9>, 9>&board, int x, int y, int candidate_gu
  * once after the iteration to make surue that it does something when it needs
  * to. Prevents premature termination of the program.
  */
-void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
+bool run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
   bool changed = false;
   while (1) {
     changed = false;
@@ -416,19 +435,19 @@ void run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
                   if (brute_force(board_copy, i, j, x + 1) == true) {
                     // if brute_force returns true, board is solved
                     board = board_copy;
-                    return;
+                    return true;
                   }
                 }
               }
               cout << endl << "Board is unsolvable :(" << endl;
-              return;
+              return false;
             }
           }
         }
       }
 
       cout << "          SOLVED BOARD     " << endl;
-      return;
+      return true;
 
       // print candidates
       for (int i = 0; i < 9; i++) {

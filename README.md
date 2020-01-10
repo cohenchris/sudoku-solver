@@ -9,6 +9,6 @@
 - UNIQUE PAIR IN SECTOR
   - If there are 2 Cells with a matching pair of possibilities, those two Cells must contain those values
   - If the Cells are in the same row/col, both of the values in that pair can be eliminated from that row/col
-
-### TODO
-- Brute Force
+- BRUTE FORCE
+  - Recursive function that guesses a candidate for a Cell if stuck, and attempts to keep going as normal
+  - If all candidates for a Cell are attempted and none work, board is unsolvable

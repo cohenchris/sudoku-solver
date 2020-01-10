@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void run_solving_algorithms(array< array<Cell, 9>, 9>&board);
+bool run_solving_algorithms(array< array<Cell, 9>, 9>&board);
 
 bool single_candidate(array< array<Cell, 9>, 9>&board, int x, int y);
 bool unique_in_row(array< array<Cell, 9>, 9>&board, int x, int y);
