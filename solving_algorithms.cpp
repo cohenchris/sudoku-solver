@@ -378,13 +378,19 @@ bool brute_force(array< array<Cell, 9>, 9>&board, int x, int y, int candidate_gu
  */
 bool run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
   bool changed = false;
+  int last_sector = -1;
+  int curr_sector = -1;
   while (1) {
     changed = false;
     for (int i = 0; i < 9; i++) {
       for (int j = 0; j < 9; j++) {
         if (board[i][j].val == -1) {
+          last_sector = curr_sector;
+          curr_sector = get_sector(i, j);
 
-          common_val_in_sector(board, i, j);
+          if (curr_sector != last_sector) {
+            common_val_in_sector(board, i, j);
+          }
 
           if (single_candidate(board, i, j) == true) {
             changed |= true;
@@ -413,7 +419,9 @@ bool run_solving_algorithms(array< array<Cell, 9>, 9>&board) {
           }
           changed |= false;
 
-          common_val_in_sector(board, i, j);
+          if (curr_sector != last_sector) {
+            common_val_in_sector(board, i, j);
+          }
         }
       }
     }
